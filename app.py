@@ -19,7 +19,10 @@ from datetime import datetime
 import pandas as pd
 import yfinance as yf
 
-app = dash.Dash()
+#app = dash.Dash()
+
+app = dash.Dash(__name__)
+server = app.server
 
 nsdq = pd.read_csv("NASDAQcompanylist.csv")
 nsdq.set_index('Symbol', inplace=True)
@@ -217,7 +220,14 @@ def update_ohlc_graph(n_clicks, stock_ticker, start_date, end_date):
     return fig
 
 
-if __name__ == '__main__':
-    app.run_server()
+#if __name__ == '__main__':
+#    app.run_server()
+
+if __name__ == "__main__":
+    app.run_server(
+        host="0.0.0.0",
+        port=8050
+    )
+
 
 
