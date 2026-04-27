@@ -111,7 +111,7 @@ def update_graph(n_clicks, stock_ticker, start_date, end_date):
     end = pd.to_datetime(end_date[:10],format='%Y-%m-%d').date()
     traces = []
     for tic in stock_ticker:
-        df = yf.download(tic, start= start, end= end)['Adj Close']
+        df = yf.download(tic, start= start, end= end)['Close']
         df = pd.DataFrame(df)
         df.columns = ['Close']
         #df = web.get_data_yahoo(tic, start=start_date, end=end_date)
@@ -179,28 +179,22 @@ def update_ohlc_graph(n_clicks, stock_ticker, start_date, end_date):
         df = yf.download(tic, start= start, end= end)[['Open','High', 'Low','Close']]
         df = pd.DataFrame(df)
 
-        data = {
-        'Date': df.index,
-        'Open': df['Open'],
-        'High': df['High'],
-        'Low': df['Low'],
-        'Close': df['Close']}
-
-        df1 = pd.DataFrame(data)
-
-        
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
 
         # Adding the first OHLC trace
-        fig.add_trace(go.Ohlc(
-            x=df1['Date'],
-            open=df1['Open'],
-            high=df1['High'],
-            low=df1['Low'],
-            close=df1['Close'],
-            name="{}".format(tic),
-            increasing_line_color='green', 
-            decreasing_line_color='red'
-        ))
+        fig.add_trace(
+            go.Ohlc(
+                x=df.index,
+                open=df["Open"],
+                high=df["High"],
+                low=df["Low"],
+                close=df["Close"],
+                name=tic,
+                increasing_line_color="green",
+                decreasing_line_color="red"
+            )
+        )
 
 
 
